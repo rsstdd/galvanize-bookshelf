@@ -25,16 +25,16 @@ router.get('/books', (_req, res, next) => {
 router.get('/books/:id', (req, res, next) => {
   const id = Number.parseInt(req.params.id);
 
-  if (id < 0 || Number.isNaN(id)) {
-    return next(boom.create(404, 'Not Found'));
+  if (Number.isNaN(id)) {
+    return next(); // say next and it will go down to the catch
   }
 
   knex('books')
     .where('id', req.params.id)
-    .first()
+    .first() // gives the first row; not an array of rows
     .then((row) => {
       if(!row) {
-        throw boom.create(404, 'Not Found');
+        throw boom.create(404, 'Not Found'); // throw it not next because you want to keep goint; When you throw in a then block, the promise will catch that and send it to the .catch error handler
       }
 
       const book = camelizeKeys(row);
@@ -68,11 +68,11 @@ router.post('/books', (req, res, next) => {
   const insertBook = { title, author, genre, description, coverUrl };
 
   knex('books')
-    .insert(decamelizeKeys(insertBook), '*')
+    .insert(decamelizeKeys(insertBook), '*') // all cols: title, author, genre, description, coverUrl
     .then((rows) => {
       const book = camelizeKeys(rows[0]);
 
-      res.send(book);
+      res.send(book); // then give me what I just inserted into the DB
     })
     .catch((err) => {
       next(err);
@@ -82,12 +82,12 @@ router.post('/books', (req, res, next) => {
 router.patch('/books/:id', (req, res, next) => {
   const id = Number.parseInt(req.params.id);
 
-  if (id < 0 || Number.isNaN(id)) {
-    return next(boom.create(404, 'Not Found'));
+  if (Number.isNaN(id)) {
+    return next();
   }
 
   knex('books')
-    .where('id', req.params.id)
+    .where('id', id) // since you already assigned it a variable, you should use it
     .first()
     .then((book) => {
       if(!book) {
@@ -97,7 +97,7 @@ router.patch('/books/:id', (req, res, next) => {
       const { title, author, genre, description, coverUrl } = req.body;
       const updateBook = {};
 
-      if (title) {
+      if (title || title.trim()) { // says the trim is better
         updateBook.title = title;
       }
 
@@ -115,13 +115,13 @@ router.patch('/books/:id', (req, res, next) => {
       }
 
       return knex('books')
-        .update(decamelizeKeys(updateBook), '*')
+        .update(decamelizeKeys(updateBook), '*') // return the items that were updated
         .where('id', req.params.id);
     })
     .then((rows) => {
       const book = camelizeKeys(rows[0]);
 
-      res.send(book);
+      res.send(book); // send that book back to the user
     })
     .catch((err) => {
       next(err);
@@ -132,13 +132,13 @@ router.delete('/books/:id', (req, res, next) => {
   let book;
   const id = Number.parseInt(req.params.id);
 
-  if (id < 0 || Number.isNaN(id)) {
-    return next(boom.create(404, 'Not Found'));
+  if (Number.isNaN(id)) {
+    return next();
   }
 
 
   knex('books')
-    .where('id', req.params.id)
+    .where('id', id)
     .first()
     .then((row) => {
       if (!row) {
@@ -149,10 +149,10 @@ router.delete('/books/:id', (req, res, next) => {
 
       return knex('books')
         .del()
-        .where('id', req.params.id)
+        .where('id', id)
     })
     .then(() => {
-      delete book.id;
+      delete book.id; 
 
       res.send(book);
     })
