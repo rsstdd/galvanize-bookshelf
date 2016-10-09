@@ -1,7 +1,8 @@
+'use strict';
 
 exports.seed = function(knex) {
   return knex('users').del()
-    .then(function () {
+    .then(() => {
       return knex('users').insert([{
         id: 1,
         first_name: 'Joanne',
