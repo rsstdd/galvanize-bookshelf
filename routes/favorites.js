@@ -25,9 +25,9 @@ router.get('/favorites', authorize, (req, res, next) => {
   const { userId } = req.token;
 
   knex('favorites')
-    .innerJoin('favorites', 'favorites.id', 'favorites.track_id')
+    .innerJoin('books', 'books.id', 'favorites.book_id')
     .where('favorites.user_id', userId)
-    .orderBy('favorites.title', 'ASC')
+    .orderBy('books.title', 'ASC')
     .then((rows) => {
       const favorites = camelizeKeys(rows);
 
@@ -38,116 +38,85 @@ router.get('/favorites', authorize, (req, res, next) => {
     });
 });
 
-router.get('/favorites/:id', authorize, (req, res, next) => {
-  const { userId } = req.token;
+router.get('/favorites/check', authorize, (req, res, next) => {
+  const { bookId } = req.query;
 
-    knex('favorites')
-    .innerJoin('favorites', 'favorites.id', 'favorites.track_id')
-    .where('favorites.user_id', userId)
-    .first()
-    .then((row) => {
-      if (!row) {
-        throw boom.create(404, 'Not Found');
-      }
+  if (isNaN(req.query.bookId)) {
+    throw next(boom.create(400, 'Book ID must be an integer'))
+  }
 
-      const track = camelizeKeys(row);
-
-      res.send(track);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  if (bookId > 1) {
+    res.send(false);
+  } else {
+    res.send(true);
+  }
 });
 
-router.post('/favorites/:id',  authorize, (req, res, next) => {
+router.post('/favorites/',  authorize, (req, res, next) => {
   const { userId } = req.token;
-  const { title, artist, likes } = req.body;
+  const { bookId } = req.query;
+  const { email, firstName, password, lastName } = req.body;
+  let favoriteBook;
 
-  if (!title || !title.trim()) {
-    return next(boom.create(400, 'Title must not be blank'));
+  if(isNaN(userId)) {
+    return next(boom.create(404, 'Not Found'));
   }
-
-  if (!artist || !artist.trim()) {
-    return next(boom.create(400, 'Artist must not be blank'));
-  }
-
-  if (!Number.isInteger(likes)) {
-    return next(boom.create(400, 'Likes must be an integer'));
-  }
-
-  const insertTrack = { title, artist, likes };
 
   knex('favorites')
-    .insert(decamelizeKeys(insertTrack), '*')
-    .then((rows) => {
-      const track = camelizeKeys(rows[0]);
+    .innerJoin('books', 'books.id', 'favorites.book_id')
+    .where('favorites.user_id', userId)
+    .orderBy('books.title', 'DSC')
+    .then((row) => {
+      if (!row) {
+        throw boom.create(400, 'Bad Requests');
+      }
 
-      res.send(track);
+      favoriteBook = row;
+
+      return knex('favorites')
+        .del()
+        .where('id', userId);
     })
-    .catch((err) => {
-      next(err);
-    });
+    .then(() => {
+      delete favoriteBook.id;
+      const jsonFavorite = camelizeKeys(favoriteBook);
+      console.log(jsonFavorite);
+      res.send(jsonFavorite);
+    })
+      .catch((err) => {
+        next(err);
+      });
 });
-//
-// router.patch('/favorites/:id',  authorize, (req, res, next) => {
-//   knex('favorites')
-//     .where('id', req.params.id)
-//     .first()
-//     .then((track) => {
-//       if (!track) {
-//         throw boom.create(404, 'Not Found');
-//       }
-//
-//       const { title, artist } = req.body;
-//       const updateTrack = {};
-//
-//       if (title) {
-//         updateTrack.title = title;
-//       }
-//
-//       if (artist) {
-//         updateTrack.artist = artist;
-//       }
-//
-//       return knex('favorites')
-//         .update(decamelizeKeys(updateTrack), '*')
-//         .where('id', req.params.id);
-//     })
-//     .then((rows) => {
-//       const track = camelizeKeys(rows[0]);
-//
-//       res.send(track);
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// });
-//
-// router.delete('/favorites/:id',  authorize, (req, res, next) => {
-//   let track;
-//
-//   knex('favorites')
-//     .where('id', req.params.id)
-//     .first()
-//     .then((row) => {
-//       if (!row) {
-//         throw boom.create(404, 'Not Found');
-//       }
-//
-//       track = camelizeKeys(row);
-//
-//       return knex('favorites')
-//         .del()
-//         .where('id', req.params.id);
-//     })
-//     .then(() => {
-//       delete track.id;
-//
-//       res.send(track);
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// });
+
+router.delete('/favorites', authorize, (req, res, next) => {
+  let favorite;
+  const { userId } = req.token;
+
+  if(isNaN(userId)) {
+    return next(boom.create(404, 'Not Found'));
+  }
+
+  knex('favorites')
+    .where('id', userId)
+    .first()
+    .then((row) => {
+      if (!row) throw boom.create(404, 'Not Found');
+
+      favorite = row;
+
+      return knex('favorites')
+        .del()
+        .where('id', userId);
+    })
+    .then(() => {
+      delete favorite.id;
+      const jsonFavorite = camelizeKeys(favorite);
+
+      res.send(jsonFavorite);
+    })
+      .catch((err) => {
+        next(err);
+      });
+});
 
 module.exports = router;

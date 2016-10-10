@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 
 const router = express.Router();
 
+
 router.post('/token', (req, res, next) => {
   const { email, password } = req.body;
 
@@ -39,7 +40,7 @@ router.post('/token', (req, res, next) => {
       delete user.hashedPassword; // then delete it
 
 
-      const expiry = new Date(Date.now() + 1000 * 60 * 60 * 3); // 3 hours
+      const expiry = new Date(Date.now() + 1000 * 60 * 60 * 3); 
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
         expiresIn: '3h'
       });
@@ -61,9 +62,11 @@ router.post('/token', (req, res, next) => {
     });
 });
 
+
 router.delete('/token', (req, res, next) => {
   res.clearCookie('token');
   res.send(true);
 });
+
 
 module.exports = router;
