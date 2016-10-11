@@ -66,7 +66,7 @@ router.post('/token', (req, res, next) => {
     })
     .catch((err) => {
       next(err);
-    })
+    });
 });
 
 router.delete('/token', (req, res, next) => {
