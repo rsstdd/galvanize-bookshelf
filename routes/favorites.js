@@ -11,7 +11,7 @@ const router = express.Router();
 
 const authorize = function(req, res, next) {
   jwt.verify(req.cookies.token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
+    if (err) {  
       return next(boom.create(401, 'Unauthorized'));
     }
 
