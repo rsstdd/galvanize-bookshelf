@@ -6,10 +6,19 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const knex = require('../knex');
 const { camelizeKeys, decamelizeKeys } = require('humps');
-const cookieParser = require('cookie-parser');
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
+router.get('/token', (req, res, next) => { // check if  token is valid
+  jwt.verify(req.cookies.token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.send(false);
+    }
+
+    res.send(true);
+  })
+});
 
 router.post('/token', (req, res, next) => {
   const { email, password } = req.body;
@@ -40,17 +49,15 @@ router.post('/token', (req, res, next) => {
       delete user.hashedPassword; // then delete it
 
 
-      const expiry = new Date(Date.now() + 1000 * 60 * 60 * 3); 
+      const expiry = new Date(Date.now() + 1000 * 60 * 60 * 3);
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
         expiresIn: '3h'
       });
-
       res.cookie('token', token, {
         httpOnly: true,
         expires: expiry,
         secure: router.get('env') === 'production'
       });
-
 
       res.send(user);
     })
@@ -59,14 +66,12 @@ router.post('/token', (req, res, next) => {
     })
     .catch((err) => {
       next(err);
-    });
+    })
 });
-
 
 router.delete('/token', (req, res, next) => {
   res.clearCookie('token');
   res.send(true);
 });
-
 
 module.exports = router;

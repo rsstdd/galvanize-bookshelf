@@ -22,7 +22,7 @@ const authorize = function(req, res, next) {
 };
 
 router.get('/favorites', authorize, (req, res, next) => {
-  const { userId } = req.token;
+  const userId = req.token.userId;
 
   knex('favorites')
     .innerJoin('books', 'books.id', 'favorites.book_id')
@@ -38,59 +38,91 @@ router.get('/favorites', authorize, (req, res, next) => {
     });
 });
 
-router.get('/favorites/check', authorize, (req, res, next) => {
+router.get('/favorites/:id', authorize, (req, res, next) => {
   const { bookId } = req.query;
-
-  if (isNaN(req.query.bookId)) {
-    throw next(boom.create(400, 'Book ID must be an integer'))
-  }
-
-  if (bookId > 1) {
-    res.send(false);
-  } else {
-    res.send(true);
-  }
-});
-
-router.post('/favorites/',  authorize, (req, res, next) => {
-  const { userId } = req.token;
-  const { bookId } = req.query;
-  const { email, firstName, password, lastName } = req.body;
-  let favoriteBook;
-
-  if(isNaN(userId)) {
-    return next(boom.create(404, 'Not Found'));
-  }
 
   knex('favorites')
-    .innerJoin('books', 'books.id', 'favorites.book_id')
-    .where('favorites.user_id', userId)
-    .orderBy('books.title', 'DSC')
-    .then((row) => {
-      if (!row) {
-        throw boom.create(400, 'Bad Requests');
-      }
+  where('book_id', bookId)
+    .then((favorites) => res.send(favorites.length > 0));
+});
 
-      favoriteBook = row;
+//   if (isNaN(req.query.bookId)) {
+//     throw next(boom.create(400, 'Book ID must be an integer'))
+//   }
+//
+//   knex('books')
+//     .innerJoin('favorites', 'books.id', 'favorites.book_id')
+//     .where('favorites.user_id', userId)
+//     .first()
+//     .then((rows) => {
+//       const favorites = camelizeKeys(rows);
+//
+//       res.send(favorites);
+//     })
+//     .catch((err) => {
+//       next(err);
+//     });
+//
+// });
 
-      return knex('favorites')
-        .del()
-        .where('id', userId);
+router.post('/favorites/',  authorize, (req, res, next) => {
+  // const { userId } = req.token;
+  const { bookId } = req.query;
+  // const { id } = req.body.bookId; // id:2
+  // const insertFavorite = { userId, bookId, id }
+  const favorite = { bookId, userId: req.token.userId };
+
+
+  // console.log(insertFavorite);
+  // favorites.id , favorites.user_id, favorites.book_id
+
+  // console.log(insertFavorite);
+
+  if(!bookId) {
+    return next(boom.create(400, 'Book id must not be blank'));
+  }
+
+  // knex('favorites')
+  //   .innerJoin('books', 'books.id', 'favorites.book_id')
+  //   .where('favorites.user_id', userId)
+  //   .orderBy('books.title', 'DSC')
+  //   .then((row) => {
+  //     if (!row) {
+  //       throw boom.create(400, 'Bad Requests');
+  //     }
+  //
+  //     favoriteBook = row;
+  //
+  //     return knex('favorites')
+  //       .del()
+  //       .where('id', userId);
+  //   })
+  //   .then(() => {
+  //     delete favoriteBook.id;
+  //     const jsonFavorite = camelizeKeys(favoriteBook);
+  //     console.log(jsonFavorite);
+  //     res.send(jsonFavorite);
+  //   })
+  //     .catch((err) => {
+  //       next(err);
+  //     });
+  knex('favorites')
+    .insert(decamelizeKeys(favorite), '*')
+    .then((rows) => {
+      favorite.id = rows[0].id;
+
+      res.send(favorite); // then give me what I just inserted into the DB
     })
-    .then(() => {
-      delete favoriteBook.id;
-      const jsonFavorite = camelizeKeys(favoriteBook);
-      console.log(jsonFavorite);
-      res.send(jsonFavorite);
-    })
-      .catch((err) => {
-        next(err);
-      });
+    .catch((err) => {
+      next(err);
+    });
 });
 
 router.delete('/favorites', authorize, (req, res, next) => {
   let favorite;
-  const { userId } = req.token;
+  const  userId  = req.token.userId;
+  const  bookId  = req.token.bookId;
+
 
   if(isNaN(userId)) {
     return next(boom.create(404, 'Not Found'));
