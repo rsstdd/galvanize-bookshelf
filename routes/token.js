@@ -10,14 +10,15 @@ const { camelizeKeys, decamelizeKeys } = require('humps');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-router.get('/token', (req, res, next) => { // check if  token is valid
-  jwt.verify(req.cookies.token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.send(false);
-    }
+const authorize = function(req, res, next) {
+  jwt.verify(req.cookies.token, process.env.JWT_SECRET, (err) => {
+    res.verify = err === null;
+    next();
+  });
+};
 
-    res.send(true);
-  })
+router.get('/token', authorize, (req, res) => {
+  res.send(res.verify);
 });
 
 router.post('/token', (req, res, next) => {
@@ -71,6 +72,7 @@ router.post('/token', (req, res, next) => {
 
 router.delete('/token', (req, res, next) => {
   res.clearCookie('token');
+  res.status(200);
   res.send(true);
 });
 

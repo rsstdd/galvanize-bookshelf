@@ -104,12 +104,15 @@ router.patch('/books/:id', (req, res, next) => {
       if (author) {
         updateBook.author = author;
       }
+
       if (genre) {
         updateBook.genre = genre;
       }
+
       if (description) {
         updateBook.description = description;
       }
+
       if (coverUrl) {
         updateBook.coverUrl = coverUrl;
       }
@@ -132,7 +135,7 @@ router.delete('/books/:id', (req, res, next) => {
   let book;
   const id = Number.parseInt(req.params.id);
 
-  if (Number.isNaN(id)) {
+  if (Number.isNaN(Number.parseInt(id))) {
     return next();
   }
 
@@ -152,7 +155,7 @@ router.delete('/books/:id', (req, res, next) => {
         .where('id', id)
     })
     .then(() => {
-      delete book.id; 
+      delete book.id;
 
       res.send(book);
     })
