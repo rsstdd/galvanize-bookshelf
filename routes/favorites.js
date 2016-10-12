@@ -76,11 +76,12 @@ router.get('/favorites/:id', authorize, (req, res, next) => {
 router.post('/favorites/',  authorize, (req, res, next) => {
   const { userId } = req.token;
   const { bookId } = req.body;
-  const favorite = { bookId, userId };
 
   if(Number.isNaN(Number.parseInt(bookId))) {
     return next(boom.create(400, 'Book ID must be an integer'));
   }
+
+  const favorite = { bookId, userId };
 
   knex('books')
    .where('id', bookId)
@@ -93,7 +94,7 @@ router.post('/favorites/',  authorize, (req, res, next) => {
       .then((rows) => {
         const insertFav = camelizeKeys(rows[0]);
 
-        res.send(favorite); // then give me what I just inserted into the DB
+        res.send(insertFav); // then give me what I just inserted into the DB
       })
       .catch((err) => {
         next(err);
