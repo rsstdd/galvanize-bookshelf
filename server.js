@@ -32,7 +32,7 @@ const path = require('path');
 
 app.use(express.static(path.join('public')));
 
-// CSRF protection
+// CSRF protecti  on
 app.use((req, res, next) => {
   if (/json/.test(req.get('Accept'))) { // getting a header and ensuring that you're getting JSON from the server
     return next();
