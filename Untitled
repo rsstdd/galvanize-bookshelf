@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+  <link rel="stylesheet" href="../css/styles.css">
+  <title>Q2 Project</title>
+</head>
+
+  <body class="parallax">
+
+    <header>
+      <nav>
+        <!-- <div class="container "> -->
+          <div class="nav-wrapper teal darken-3">
+            <a href="index.html" class="brand-logo">Trip Planner</a>
+            <ul class="right side-nav" id="nav-mobile">
+              <li class="hide-on-small-only"><a href="parallax.html"><i class="mdi-navigation-arrow-back"></i></a></li>
+            </ul>
+            <a class="button-collapse" href="#" data-activates='nav-mobile'><i class="mdi-navigation-menu"></i></a>
+          </div>
+        <!-- </div> -->
+      </nav>
+    </header>
+
+    <main>
+      <div class="parallax-container">
+        <div class="parallax"><img src="./images/halongBay.jpg"></div>
+      </div>
+      <div class="section white z-depth-5">
+        <div class="row container">
+          <h2 class="header">WanderLust</h2>
+          <p class="grey-text text-darken-3 lighten-3">WanderLust: A deep uncontrollable desire to hit the road and travel, by whatever means desired, to explore and enjoy the world.</p>
+        </div>
+        <div class="row container">
+          <h4 class="light">Start Collecting Today</h4>
+        </div>
+
+        <div class="row container">  <!-- Modal Trigger -->
+          <button class="waves-effect waves-light btn modal-trigger center" data-target="modal1">Modal</button>
+
+          <!-- Modal Structure -->
+          <form id="signUpForm">
+            <div id="modal1" class="modal z-depth-5">
+                <div class="modal-content">
+                  <h4>Login or Register</h4>
+                  <div class="row">
+                    <form class="col s12">
+                      <div class="row modal-form-row">
+                        <div class="input-field col s12">
+                          <input id="email" type="email" class="validate">
+                          <label for="Email" data-error="wrong" data-success="right">Email</label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="input-field col s12">
+                          <input id="password" type="password" class="validate">
+                          <label for="password" data-error="wrong" data-success="right">Password</label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="input-field col s12">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="modal-footer card-action">
+                <button id="register" class="modal-action waves-effect waves-teal darken-3 btn-flat center waves-effect waves-light btn-large" type="submit" name="action">
+                  Register
+                  <i class="material-icons left">perm_identity</i>
+                </button>
+                <button id="logIn" class="modal-action waves-effect waves-teal darken-3 btn-flat center waves-effect waves-light btn-large" type="submit" name="action">
+                  <i class="material-icons left">lock</i>
+                  Log in
+                </button>
+              </div>
+            </div>
+          </form>
+          </div>
+      </div>
+      <div class="parallax-container">
+        <div class="parallax"><img src="http://cdn.wallpapersafari.com/12/62/yfCSk2.jpg"></div>
+      </div>
+    </main>
+
+     <footer class="page-footer teal darken-3">
+        <div class="container">
+          <div class="row">
+            <div class="col l4 s12">
+              <h5 class="white-text"></h5>
+            </div>
+          </div>
+        </div>
+        <div class="footer-copyright">
+          <div class="container">
+          <a class="grey-text text-lighten-4 right" href=""></a>
+          </div>
+        </div>
+      </footer>
+
+      <!--  Scripts-->
+      <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+      <script src="../js/index.js"></script>
+ </body>
+</html>

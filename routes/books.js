@@ -35,8 +35,11 @@ router.get('/books/:id', (req, res, next) => {
     .where('id', req.params.id)
     .first() // gives the first row; not an array of rows
     .then((row) => {
-      if(!row) {
-        throw boom.create(404, 'Not Found'); // throw it not next because you want to keep goint; When you throw in a then block, the promise will catch that and send it to the .catch error handler
+      if (!row) {
+        throw boom.create(
+          404,
+          'Not Found'
+        ); // throw it not next because you want to keep goint; When you throw in a then block, the promise will catch that and send it to the .catch error handler
       }
 
       const book = camelizeKeys(row);

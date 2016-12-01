@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt-as-promised');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const knex = require('../knex');
-const { camelizeKeys, decamelizeKeys } = require('humps');
+const { camelizeKeys } = require('humps');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
@@ -49,9 +49,10 @@ router.post('/token', (req, res, next) => {
     .then(() => {
       delete user.hashedPassword; // then delete it
 
-
       const expiry = new Date(Date.now() + 1000 * 60 * 60 * 3);
+
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+
         expiresIn: '3h'
       });
       res.cookie('token', token, {
@@ -70,7 +71,7 @@ router.post('/token', (req, res, next) => {
     });
 });
 
-router.delete('/token', (req, res, next) => {
+router.delete('/token', (req, res, _next) => {
   res.clearCookie('token');
   res.status(200);
   res.send(true);

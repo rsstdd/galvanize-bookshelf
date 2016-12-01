@@ -73,11 +73,11 @@ router.get('/favorites/:id', authorize, (req, res, next) => {
     });
 });
 
-router.post('/favorites/',  authorize, (req, res, next) => {
+router.post('/favorites/', authorize, (req, res, next) => {
   const { userId } = req.token;
   const { bookId } = req.body;
-
-  if(Number.isNaN(Number.parseInt(bookId))) {
+  
+  if (Number.isNaN(Number.parseInt(bookId))) {
     return next(boom.create(400, 'Book ID must be an integer'));
   }
 
@@ -89,7 +89,7 @@ router.post('/favorites/',  authorize, (req, res, next) => {
    .then((row) => {
      if (!row) return next(boom.create(404, 'Book not found'));
 
-    return knex('favorites')
+     return knex('favorites')
       .insert(decamelizeKeys(favorite), '*')
       .then((rows) => {
         const insertFav = camelizeKeys(rows[0]);
@@ -99,11 +99,11 @@ router.post('/favorites/',  authorize, (req, res, next) => {
       .catch((err) => {
         next(err);
       });
-    })
+   })
     .catch((err) => {
       next(err);
     });
-  });
+});
 
 router.delete('/favorites', authorize, (req, res, next) => {
   let favorite;
