@@ -12,18 +12,18 @@ const router = express.Router();
 router.post('/users', (req, res, next) => {
   const { email, firstName, password, lastName } = req.body; // destructuring the req.body obj; pulling the email password, etc from that object
 
-  if (!email || !email.trim()) { // if no email; or no trimmed email
-  return next(boom.create(400, 'Email must not be blank')); // return next and create 400 error
-  }
-  if (!password || password.length < 8) {
-    return next(boom.create(400, 'Password must be at least 8 characters long'));
-  }
-  if (!firstName || !firstName.trim()) {
-    return next(boom.create(400, 'First Name must not be blank'));
-  }
-  if (!lastName || !lastName.trim()) {
-    return next(boom.create(400, 'Last Name must not be blank'));
-  }
+  // if (!email || !email.trim()) { // if no email; or no trimmed email
+  // return next(boom.create(400, 'Email must not be blank')); // return next and create 400 error
+  // }
+  // if (!password || password.length < 8) {
+  //   return next(boom.create(400, 'Password must be at least 8 characters long'));
+  // }
+  // if (!firstName || !firstName.trim()) {
+  //   return next(boom.create(400, 'First Name must not be blank'));
+  // }
+  // if (!lastName || !lastName.trim()) {
+  //   return next(boom.create(400, 'Last Name must not be blank'));
+  // }
 
   knex('users')
     .where('email', email)
